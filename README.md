@@ -51,7 +51,7 @@ When parsing standard biological trees (like `.nex` files), this number represen
 * **High Values (e.g., 10+):** Restricts connections to highly specific, recent sub-clades. Only closely related sister species or animals in the exact same genus will draw an edge.
 
 ### 2. Linguistic Trees (Adaptive Proportional Depth)
-Linguistic tree dialects (like `.trees.gz` text strings) often have wildly uneven branch lengths across language families. To prevent large, shallow language families from skewing your metrics, the engine dynamically converts your integer value into a percentage threshold (multiplying the value by 10%).
+Linguistic trees (like `.trees.gz` text strings) often have wildly uneven branch lengths across language families. To prevent large, shallow language families from skewing your metrics, the engine dynamically converts your integer value into a percentage threshold (multiplying the value by 10%).
 * **Value of 3 (interprets as 30%):** A relaxed threshold. Two languages draw a connection if they share even a minor portion of their historical path down from the root.
 * **Value of 5 (interprets as 50%):** A balanced median benchmark. Requires languages to share at least half of their ancestral lineage history.
 * **Value of 7 or higher (interprets as 70%+):** A highly restrictive threshold. Disconnects massive regional families from each other, only drawing an edge if the languages share a deep, specific local history (like close dialects or sub-branches).
@@ -128,18 +128,18 @@ The function returns two standard network adjacency metrics, both scaled strictl
 
 ### Matrix Interpretation Guidelines
 
-Because these connectivity metrics reflect the strength of spatial and historical relationships in the data, they can serve as a guide for selecting the right model architecture:
+Because these connectivity metrics reflect the strength of spatial and historical relationships in the data, they serve as a guide for selecting the right model architecture:
 
-* **Sparse Matrix / Signal Deficit (\(\kappa \le 0.005\)):**
+* **Sparse Matrix / Signal Deficit (κ ≤ 0.005):**
   The network matrix is extremely sparse (as seen in the linguistics track). When connectivity drops this low, standard variance-partitioning frameworks (like PGLMM or Gaussian Process tracks) often struggle or fail because there is almost no shared historical overlap between data points.
   * **Frequentist Models:** Typically flag this deficit openly by throwing optimization warnings, boundary constraints, or failing to converge entirely.
-  * **Bayesian Models:** May successfully complete sampling chains and report technical convergence (stable trace plots and clean \(\hat{R}\) diagnostics) due to the smoothing influence of regularizing priors. However, the model may still suffer from hidden parameter explosion or structural variance collapse, where the posterior distribution simply mirrors the prior because the data signal is too weak. This calls the validity of the partitioned variance results into question.
-  In this sparse tier, simpler flat regressions or strict categorical controls are often more stable, and in some cases the data requires special treatment.
+  * **Bayesian Models:** May successfully complete sampling chains and report technical convergence (stable trace plots and clean R-hat diagnostics) due to the smoothing influence of regularizing priors. However, the model may still suffer from hidden parameter explosion or structural variance collapse—where the posterior distribution simply mirrors the prior because the data signal is too weak. This calls the validity of the partitioned variance results into question.
+  In this sparse tier, simpler flat regressions or strict categorical controls are often more stable, and in some cases the data may require special treatment.
 
-* **Moderate Structural Signal (\(0.005 < \kappa \le 0.15\)):**
+* **Moderate Structural Signal (0.005 < κ ≤ 0.15):**
   The network possesses a mild, balanced signal (as seen in the culture track). There is enough shared historical overlap to separate background lineage history from your primary variables without overwhelming the model. Standard regressions with basic regional or family random effects usually perform well here.
 
-* **Dense Matrix / Strong Covariance Signal (\(\kappa > 0.15\)):**
+* **Dense Matrix / Strong Covariance Signal (κ > 0.15):**
   The dataset contains a highly dense, robust historical or spatial signal (as seen in the biology track).
   * **Standard Architectures:** Simple regressions (like standard GLM) should be avoided here, as the high density violates basic row-independence assumptions, leading to artificially low p-values and high false-positive rates.
   * **Advanced Architectures:** This tier is **ideal for specialized, structure-aware models** like Phylogenetic GLMMs, continuous Gaussian Processes, or spatial autoregressive workflows. The high density provides a rich, strong signal that allows these advanced architectures to perfectly map and control for background historical relationships.
