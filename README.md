@@ -120,7 +120,28 @@ More details can be found in the `calculate_k_densities.py` script in this repo.
 
 
 ## Understanding the Outputs
-The function returns two numbers:
-* **Spatial Density:** The proportion of your data points that sit close enough to each other geographically to cross your distance limit.
-* **Structural Density:** The proportion of data points that share a deep historical or evolutionary branch.
-* If your dataset lacks the columns needed for a specific calculation, the function returns `NaN` (Not a Number) for that metric instead of crashing, allowing your loops to finish running.
+
+The function returns two standard network adjacency metrics, both scaled strictly between `0.0` (no connectivity) and `1.0` (complete saturation):
+
+* **Spatial Density:** The proportion of your data point pairs that sit close enough to each other geographically to cross your distance limit.
+* **Structural Density:** The proportion of your data point pairs that share a deep historical or evolutionary branch segment.
+
+### Matrix Interpretation Guidelines
+
+Because these connectivity metrics reflect the strength of spatial and historical relationships in the data, they can serve as a guide for selecting the right model architecture:
+
+* **Sparse Matrix / Signal Deficit (\(\kappa \le 0.005\)):**
+  The network matrix is extremely sparse (as seen in the linguistics track). When connectivity drops this low, standard variance-partitioning frameworks (like PGLMM or Gaussian Process tracks) often struggle or fail because there is almost no shared historical overlap between data points.
+  * **Frequentist Models:** Typically flag this deficit openly by throwing optimization warnings, boundary constraints, or failing to converge entirely.
+  * **Bayesian Models:** May successfully complete sampling chains and report technical convergence (stable trace plots and clean \(\hat{R}\) diagnostics) due to the smoothing influence of regularizing priors. However, the model may still suffer from hidden parameter explosion or structural variance collapse, where the posterior distribution simply mirrors the prior because the data signal is too weak. This calls the validity of the partitioned variance results into question.
+  In this sparse tier, simpler flat regressions or strict categorical controls are often more stable, and in some cases the data requires special treatment.
+
+* **Moderate Structural Signal (\(0.005 < \kappa \le 0.15\)):**
+  The network possesses a mild, balanced signal (as seen in the culture track). There is enough shared historical overlap to separate background lineage history from your primary variables without overwhelming the model. Standard regressions with basic regional or family random effects usually perform well here.
+
+* **Dense Matrix / Strong Covariance Signal (\(\kappa > 0.15\)):**
+  The dataset contains a highly dense, robust historical or spatial signal (as seen in the biology track).
+  * **Standard Architectures:** Simple regressions (like standard GLM) should be avoided here, as the high density violates basic row-independence assumptions, leading to artificially low p-values and high false-positive rates.
+  * **Advanced Architectures:** This tier is **ideal for specialized, structure-aware models** like Phylogenetic GLMMs, continuous Gaussian Processes, or spatial autoregressive workflows. The high density provides a rich, strong signal that allows these advanced architectures to perfectly map and control for background historical relationships.
+
+*Note: If your dataset lacks the columns needed for a specific calculation, the function returns `NaN` (Not a Number) for that metric instead of crashing, allowing your automation loops to finish running.*
