@@ -68,8 +68,8 @@ for csv_path in bio_csvs:
         "Domain": "Biology",
         "Label": label,
         "Sample_Size_N": len(df_bio),
-        "Kappa_Spatial": k_spatial if not pd.isna(k_spatial) else "N/A",
-        "Kappa_Structural": k_structural if not pd.isna(k_structural) else "N/A"
+        "Spatial_Density": k_spatial if not pd.isna(k_spatial) else "N/A",
+        "Structural_Density": k_structural if not pd.isna(k_structural) else "N/A"
     })
 
 # save the biological summary table
@@ -149,8 +149,8 @@ if os.path.exists(glottolog_path):
             "Domain": "Linguistics",
             "Label": feat_id,
             "Sample_Size_N": len(ling_df),
-            "Kappa_Spatial": k_spatial if not pd.isna(k_spatial) else "N/A",
-            "Kappa_Structural": k_structural if not pd.isna(k_structural) else "N/A"
+            "Spatial_Density": k_spatial if not pd.isna(k_spatial) else "N/A",
+            "Structural_Density": k_structural if not pd.isna(k_structural) else "N/A"
         })
 
     # save the linguistic findings
@@ -197,8 +197,8 @@ for excel_path in etc_excel_paths:
         "Domain": "Culture",
         "Label": label,
         "Sample_Size_N": len(df_etc),
-        "Kappa_Spatial": k_spatial if not pd.isna(k_spatial) else "N/A",
-        "Kappa_Structural": k_structural if not pd.isna(k_structural) else "N/A"
+        "Spatial_Density": k_spatial if not pd.isna(k_spatial) else "N/A",
+        "Structural_Density": k_structural if not pd.isna(k_structural) else "N/A"
     })
 
 # save the cultural metrics
