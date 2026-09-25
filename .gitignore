@@ -1,0 +1,14 @@
+# Python development artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Package build and distribution directories
+build/
+dist/
+*.egg-info/
+pykdensity.egg-info/
+
+# Local execution results (optional: remove if you want to push your baseline images)
+results/
