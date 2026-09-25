@@ -68,7 +68,7 @@ from pykdensity import calculate_densities
 # sample data from Munstermann et al (2022)
 df = pd.read_csv("data/bio/mammals.csv")
 
-# This will unzip the file automatically and run the fixed-node biological calculation
+# This will load/unzip the tree file and run the fixed-node biological calculation
 spatial_k, structural_k = calculate_densities(
     data=df,
     id_col="Species",
@@ -79,7 +79,7 @@ spatial_k, structural_k = calculate_densities(
 ```
 
 ### 2. Using Coordinates and Compressed Trees (Linguistics Example)
-If you are tracking geographic points alongside a linguistic tree file:
+If you are tracking geographic points alongside a tree file:
 
 ```python
 import pandas as pd
@@ -93,7 +93,7 @@ spatial_k, structural_k = calculate_densities(
     id_col="glottocode",
     tree="data/tlu/0008KA/pruned_tree.trees.gz",
     tree_type="adaptive",
-    structural_depth_threshold=15
+    structural_depth_threshold=8
 )
 ```
 
