@@ -41,9 +41,12 @@ for csv_path in bio_csvs:
     if not os.path.exists(tree_path):
         tree_path = csv_path.replace(".csv", ".nex")
 
+    local_csv_path = os.path.relpath(csv_path, base_dir)
+    local_tree_path = os.path.relpath(tree_path, base_dir) if os.path.exists(tree_path) else "None"
+
     print(f"\n -> Processing file: {label}")
-    print(f"    Spreadsheet: {csv_path}")
-    print(f"    Tree file: {tree_path}")
+    print(f"    Spreadsheet: {local_csv_path}")
+    print(f"    Tree file: {local_tree_path}")
 
     # load the table into python
     df_bio = pd.read_csv(csv_path)
@@ -73,7 +76,7 @@ for csv_path in bio_csvs:
 if bio_results:
     bio_output_path = os.path.join(results_dir, "biology_connectivity_summary.csv")
     pd.DataFrame(bio_results).to_csv(bio_output_path, index=False)
-    print(f"\nbiology results saved to: {bio_output_path}")
+    print(f"\nBiology results saved to: {os.path.relpath(bio_output_path, base_dir)}")
 
 # 2. Linguistic data example
 # This step handles individual language traits across folders. It combines real
@@ -88,7 +91,7 @@ ling_results = []
 
 # Ensure the main language map file is present before looping
 if os.path.exists(glottolog_path):
-    print(f" -> Loading language map files from: {glottolog_path}")
+    print(f" -> Loading language map files from: {os.path.relpath(glottolog_path, base_dir)}")
     gldf = pd.read_csv(glottolog_path)
 
     # Clean the data by keeping language codes and filtering out rows missing coordinates
@@ -122,8 +125,9 @@ if os.path.exists(glottolog_path):
         fdf['glottocode'] = fdf['glottocode'].astype(str).str.strip().str.lower()
         ling_df = pd.merge(gldf_shared, fdf, on='glottocode', how='inner')
 
+        local_tree_print = os.path.relpath(tree_path, base_dir) if tree_path else "None"
         print(f"    Matched {len(ling_df)} languages on the map.")
-        print(f"    Tree file found: {tree_path}")
+        print(f"    Tree file found: {local_tree_print}")
 
         # run the calculator using kilometer distances and dynamic tree branches
         k_spatial, k_structural = calculate_densities(
@@ -153,9 +157,9 @@ if os.path.exists(glottolog_path):
     if ling_results:
         ling_output_path = os.path.join(results_dir, "linguistics_connectivity_summary.csv")
         pd.DataFrame(ling_results).to_csv(ling_output_path, index=False)
-        print(f"\nLinguistics results saved to: {ling_output_path}")
+        print(f"\nLinguistics results saved to: {os.path.relpath(ling_output_path, base_dir)}")
 else:
-    print(f"Cannot run linguistics loop: file missing at {glottolog_path}")
+    print(f"Cannot run linguistics loop: file missing at {os.path.relpath(glottolog_path, base_dir)}")
 
 # 3. Cultural data example
 # This step handles historical datasets that lack an explicit family tree file.
@@ -171,8 +175,9 @@ etc_results = []
 for excel_path in etc_excel_paths:
     # use the spreadsheet filename as the tracker row title
     label = str(os.path.basename(excel_path).split(".")[0])
+    local_excel_path = os.path.relpath(excel_path, base_dir)
     print(f" -> Opening spreadsheet: {label}")
-    print(f"    Path: {excel_path}")
+    print(f"    Path: {local_excel_path}")
 
     # load the excel rows directly into python
     df_etc = pd.read_excel(excel_path)
@@ -200,7 +205,7 @@ for excel_path in etc_excel_paths:
 if etc_results:
     etc_output_path = os.path.join(results_dir, "culture_connectivity_summary.csv")
     pd.DataFrame(etc_results).to_csv(etc_output_path, index=False)
-    print(f"\nCulture results saved to: {etc_output_path}")
+    print(f"\nCulture results saved to: {os.path.relpath(etc_output_path, base_dir)}")
 
 # 4. complete
 print("\n" + "-" * 80)
