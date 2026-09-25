@@ -164,7 +164,7 @@ def calculate_densities(data, id_col, tree=None, tree_type='fixed', taxonomy_hie
     if n < 2:
         return spatial_density, structural_density
 
-    # 1. geographical distance calculation
+    # geographical distance calculation
     if coord_cols and not theme_cols:
         if len(coord_cols) == 3:
             coords = df[coord_cols].to_numpy().astype(float)
@@ -186,7 +186,7 @@ def calculate_densities(data, id_col, tree=None, tree_type='fixed', taxonomy_hie
         A_space = (geo_vector[:, None] == geo_vector[None, :]).astype(float)
         spatial_density = _compute_edge_density(A_space)
 
-    # 2. historical relationship calculation
+    # historical relationship calculation
     has_valid_tree = False
 
     if tree is not None and os.path.exists(tree):
@@ -218,8 +218,35 @@ def calculate_densities(data, id_col, tree=None, tree_type='fixed', taxonomy_hie
         A_struct = (theme_matrix[:, None, :] == theme_matrix[None, :, :]).all(axis=2).astype(float)
         structural_density = _compute_edge_density(A_struct)
 
+    # data diagnostics printout loop
     if verbose:
-        print(f"Spatial density: {spatial_density if pd.isna(spatial_density) else f'{spatial_density:.4f}'}")
-        print(f"Structural density: {structural_density if pd.isna(structural_density) else f'{structural_density:.4f}'}")
+        print("-" * 80)
+        print(f"Spatial density    : {spatial_density if pd.isna(spatial_density) else f'{spatial_density:.4f}'}")
+        print(f"Structural density : {structural_density if pd.isna(structural_density) else f'{structural_density:.4f}'}")
+        print("-" * 80)
+
+        # evaluate the spatial connectivity layer if calculated
+        if not pd.isna(spatial_density):
+            if spatial_density > 0.15:
+                print("Spatial result     : High geographical clustering found.")
+                print("Spatial rule       : Ideal for continuous spatial models (Gaussian Process).")
+            elif spatial_density <= 0.005:
+                print("Spatial result     : Very sparse geographical connections found.")
+                print("Spatial rule       : Spatial clustering is minimal. Standard models are stable.")
+            else:
+                print("Spatial result     : Balanced, stable spatial baseline signal.")
+            print("-" * 80)
+
+        # evaluate the structural connectivity layer if calculated
+        if not pd.isna(structural_density):
+            if structural_density > 0.15:
+                print("Structural result  : High structural data clustering found.")
+                print("Structural rule    : Ideal for structure-aware models (PGLMM).")
+            elif structural_density <= 0.005:
+                print("Structural result  : Very sparse data connections found.")
+                print("Structural rule    : High risk of parameter errors. Simpler flat models recommended.")
+            else:
+                print("Structural result  : Balanced, stable structural baseline signal.")
+            print("-" * 80)
 
     return spatial_density, structural_density
