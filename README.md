@@ -10,7 +10,7 @@ Measuring these attributes helps researchers identify when data points are too c
 You can install this package directly from GitHub by adding it to your terminal or your project's requirements file.
 
 ```bash
-pip install git+https://github.com
+pip install git+https://github.com/lingdoc/pykdensity
 ```
 
 
