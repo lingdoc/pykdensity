@@ -1,51 +1,53 @@
 """
-generate_k_comparison_chart.py: Visualizes spatial and structural
-connectivity metrics (\kappa) across biological, linguistic, and cultural domains.
+generate_k_comparison_chart.py
+
+reads the summary files from the results folder and generates a bar chart
+comparing spatial and structural data connectivity across domains.
 """
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def generate_publication_chart():
-    # 1. Establish path registries
-    RESULTS_DIR = "results"
-    OUTPUT_IMAGE = os.path.join(RESULTS_DIR, "cross_domain_connectivity_comparison.png")
+def generate_comparison_chart():
+    # setup paths for input files and the final image output
+    results_dir = "results"
+    output_image = os.path.join(results_dir, "cross_domain_connectivity_comparison.png")
 
-    bio_path = os.path.join(RESULTS_DIR, "biology_connectivity_summary.csv")
-    ling_path = os.path.join(RESULTS_DIR, "linguistics_connectivity_summary.csv")
-    cult_path = os.path.join(RESULTS_DIR, "culture_connectivity_summary.csv")
+    bio_path = os.path.join(results_dir, "biology_connectivity_summary.csv")
+    ling_path = os.path.join(results_dir, "linguistics_connectivity_summary.csv")
+    cult_path = os.path.join(results_dir, "culture_connectivity_summary.csv")
 
-    # 2. Gather tracking logs
+    # collect the rows from each summary table
     plot_data = []
 
-    # Ingest Biology
+    # load the biology summary rows
     if os.path.exists(bio_path):
         df = pd.read_csv(bio_path)
         for _, row in df.iterrows():
-            plot_data.append({"Domain": "Biology", "Layer": "Spatial", "Density": 0.0}) # Spatial defaults to NaN/0
-            plot_data.append({"Domain": "Biology", "Layer": "Structural", "Density": float(row["Kappa_Structural"])})
+            plot_data.append({"Domain": "Biology", "Type": "Spatial", "Density": 0.0}) # spatial tracks as nan/0 here
+            plot_data.append({"Domain": "Biology", "Type": "Structural", "Density": float(row["Structural_Density"])})
 
-    # Ingest Linguistics (Aggregate means across features)
+    # load the linguistics summary rows and calculate averages across features
     if os.path.exists(ling_path):
         df = pd.read_csv(ling_path)
-        plot_data.append({"Domain": "Linguistics", "Layer": "Spatial", "Density": df["Kappa_Spatial"].mean()})
-        plot_data.append({"Domain": "Linguistics", "Layer": "Structural", "Density": df["Kappa_Structural"].mean()})
+        plot_data.append({"Domain": "Linguistics", "Type": "Spatial", "Density": df["Spatial_Density"].mean()})
+        plot_data.append({"Domain": "Linguistics", "Type": "Structural", "Density": df["Structural_Density"].mean()})
 
-    # Ingest Culture
+    # load the culture summary rows
     if os.path.exists(cult_path):
         df = pd.read_csv(cult_path)
         for _, row in df.iterrows():
-            plot_data.append({"Domain": "Culture", "Layer": "Spatial", "Density": float(row["Kappa_Spatial"])})
-            plot_data.append({"Domain": "Culture", "Layer": "Structural", "Density": float(row["Kappa_Structural"])})
+            plot_data.append({"Domain": "Culture", "Type": "Spatial", "Density": float(row["Spatial_Density"])})
+            plot_data.append({"Domain": "Culture", "Type": "Structural", "Density": float(row["Structural_Density"])})
 
     if not plot_data:
-        print("Error: No connectivity logs found inside the results directory.")
+        print("Error: no summary files found in the results folder.")
         return
 
     df_plot = pd.DataFrame(plot_data)
 
-    # 3. Configure professional visual styling parameters
+    # set standard chart text sizes and grid properties
     sns.set_theme(style="whitegrid")
     plt.rcParams.update({
         "font.family": "serif",
@@ -58,29 +60,29 @@ def generate_publication_chart():
 
     fig, ax = plt.subplots(figsize=(7, 5))
 
-    # Render grouping bars cleanly side-by-side
+    # draw the bars side by side using distinct colors
     palette = {"Spatial": "#4A90E2", "Structural": "#E2844A"}
     sns.barplot(
         data=df_plot,
         x="Domain",
         y="Density",
-        hue="Layer",
+        hue="Type",
         palette=palette,
         edgecolor="0.2",
         linewidth=1.2,
         ax=ax
     )
 
-    # 4. Refine grid axes boundaries
-    ax.set_title("Empirical Adjacency Network Edge Densities ($\kappa$) Across Scientific Domains", pad=15)
-    ax.set_xlabel("Research Domain Context", labelpad=10)
-    ax.set_ylabel("Matrix Edge Density Scale ($\kappa$)", labelpad=10)
+    # configure title, axis labels, and chart limits
+    ax.set_title("Data Connectivity Levels Across Fields of Study", pad=15)
+    ax.set_xlabel("Field of Study", labelpad=10)
+    ax.set_ylabel("Data Density Score", labelpad=10)
     ax.set_ylim(0.0, 0.7)
 
-    # Add data value labels on top of bars
+    # draw data value labels on top of each individual bar
     for p in ax.patches:
         height = p.get_height()
-        if height > 0.0001:  # Skip drawing label elements for zero values
+        if height > 0.0001:  # ignore labels for zero or empty values
             ax.annotate(f"{height:.4f}",
                         (p.get_x() + p.get_width() / 2., height),
                         ha='center', va='center',
@@ -89,14 +91,14 @@ def generate_publication_chart():
                         fontsize=10,
                         weight='bold')
 
-    ax.legend(title="Network Layer Profile", loc="upper right", frameon=True)
+    ax.legend(title="Connection Type", loc="upper right", frameon=True)
     sns.despine(left=True, bottom=True)
     plt.tight_layout()
 
-    # Export graphic asset
-    plt.savefig(OUTPUT_IMAGE, dpi=300)
+    # save the image file to disk
+    plt.savefig(output_image, dpi=300)
     plt.close()
-    print(f"📊 Publication comparative visual saved successfully to: {OUTPUT_IMAGE}")
+    print(f"Comparison chart saved to: {output_image}")
 
 if __name__ == "__main__":
-    generate_publication_chart()
+    generate_comparison_chart()
