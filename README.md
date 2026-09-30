@@ -37,7 +37,7 @@ It accepts the following arguments:
 * **`struct_mode`** (string): Controls structural calculation. Accepts 'tree', 'categorical', 'mixed', 'auto', or 'none'.
 * **`spatial_cats`** (string or list of strings): Category columns used to group data by region names (e.g., 'macroarea' or 'Zone').
 * **`struct_cats`** (string or list of strings): Category columns used to group data by flat lineages (e.g., 'Family_ID', 'Order', or 'Family').
-* **`coord_cols`** (list of strings): Coordinates passed as a list of column headers containing Cartesian points (e.g., `['latitude', 'longitude']`).
+* **`coord_cols`** (list of strings): Coordinates passed as a list of column headers containing points (e.g., `['latitude', 'longitude']` or `['X', 'Y', 'Z']`).
 * **`spatial_km`** (float): The maximum distance in kilometers to consider two points geographically connected. Defaults to 500.0.
 * **`struct_depth`** (integer): The minimum shared historical node depth or percentage ratio required to consider two points connected. Defaults to 3.
 * **`verbose`** (boolean): Set to True to print progress logs and diagnostics to the terminal window. Defaults to True.
