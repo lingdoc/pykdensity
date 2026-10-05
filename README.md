@@ -2,7 +2,7 @@
 
 pykdensity is a Python package designed to measure connectivity (κ) within datasets used in biology, linguistics, and anthropology. Specifically, it calculates spatial density (how close your data points are to each other geographically) and structural density (how closely related your data points are evolutionarily or historically).
 
-Measuring these attributes helps researchers identify when data points are too clustered, which can distort statistical results if left uncorrected.
+Measuring these attributes helps researchers identify under-determined sparse regions and isolated edge anomalies. When specific nodes are too structurally or spatially sparse, traditional multilevel models lose regularizing traction, potentially distorting statistical outputs through parameter collapse or standard error explosion if the volatile nodes are not properly partitioned.
 
 
 ## Installation
