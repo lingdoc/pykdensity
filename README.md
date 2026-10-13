@@ -175,14 +175,16 @@ Because these connectivity metrics reflect the strength of spatial and historica
 
 #### Spatial density tiers
 * **Sparse spatial frontier (κ_spatial ≤ 0.01):**
-  Indicates heavy geographic dispersion. While the continuous coordinate surface handles low density gracefully without collapsing your equations, it flags the need for specialized continuous models to fill extensive physical gaps. Standard models remain stable.
+  Indicates extreme geographic dispersion. The continuous coordinate surface may still handle this low density gracefully, but it flags the need for specialized continuous models to fill extensive physical gaps.
+* **Moderate spatial mesh (0.20 > κ_spatial > 0.01):**
+  Reasonable geographic signal. Standard models remain stable.
 * **Dense spatial mesh (κ_spatial > 0.20):**
   Heavy geographic concentration. High risk of spatial autocorrelation (Galton's Problem), where proximity completely confounds historical independence. Spatial controls are mandatory.
 
 #### Structural density tiers
 * **Sparse topology [Critical Zone] (κ_structural ≤ 0.10):**
   The structural matrix shatters into completely disconnected lineage islands. Traditional multi-level models run out of shared branch traction, triggering severe parameter collapse or runaway errors. Continuous spatial cross-pooling or properly partitioned architectures are required to anchor the parameters.
-* **Moderate topology [Safe Zone] (0.25 > κ_structural ≥ 0.10):**
+* **Moderate topology [Safe Zone] (0.25 > κ_structural > 0.10):**
   The dataset contains sufficient structural signal for convergence by multiple kinds of modeling architectures.
 * **Dense topology [Safe Zone] (κ_structural > 0.25):**
   The dataset contains a highly dense, robust historical signal. Ideal for structure-aware models. Simple regressions may produce artificially low p-values and high false-positive rates, as high structural density violates row-independence assumptions.
