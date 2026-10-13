@@ -61,7 +61,7 @@ Linguistic trees often have wildly uneven branch lengths across language familie
 
 ## Examples
 
-### 1. Using a Tree File (Biology Example)
+### 1. Using a tree file (biology example)
 If you have an explicit tree file showing how species are related:
 
 ```python
@@ -80,7 +80,7 @@ spatial_k, structural_k = calculate_densities(
 )
 ```
 
-### 2. Using Coordinates and Compressed Trees (Linguistics Example)
+### 2. Using coordinates and compressed trees (linguistics example)
 If you are tracking geographic points alongside a tree file:
 
 ```python
@@ -103,7 +103,7 @@ spatial_k, structural_k = calculate_densities(
 )
 ```
 
-### 3. Using Categorical Groupings (Culture Example)
+### 3. Using categorical groupings (culture example)
 If your data does not use explicit tree paths but relies on regional and historical categories:
 
 ```python
@@ -121,23 +121,23 @@ spatial_k, structural_k = calculate_densities(
 )
 ```
 
-## Advanced Multi-Layer Overlays (Mixed Mode)
+## Advanced multi-layer overlays (mixed mode)
 
 A key feature of `pykdensity` is its ability to run **Mixed Mode** intersection metrics. This allows you to combine continuous topological layers (like geographic coordinates or branching tree structures) with flat categorical overlays (like macroareas or language family groupings) to get a more realistic picture of data clustering.
 
 The engine handles these combined data spaces automatically using a logical intersection rule:
 
-### 1. Spatial Mixed Overlays (`coord_cols` + `spatial_cats`)
+### 1. Spatial mixed overlays (`coord_cols` + `spatial_cats`)
 When you provide both geographic coordinates and region category tags, the engine builds a dual-constraint network grid:
 * **The Rule:** Two rows draw a connection **ONLY IF** they sit within the specified distance limit (e.g., `spatial_km=500.0`) **AND** belong to the exact same text category (e.g., `spatial_cats='macroarea'`).
 * **Why use it:** This prevents distant geographic outliers that happen to share an artificial administrative boundary from bloating your connectivity scores.
 
-### 2. Structural Mixed Overlays (`tree` + `struct_cats`)
+### 2. Structural mixed overlays (`tree` + `struct_cats`)
 When you pass a branching lineage file along with discrete flat family or order categories, the engine combines their signals:
 * **The Rule:** Two rows draw a connection if they pass your ancestral branch path limit (`struct_depth`) **OR** if they match the categorical name labels exactly (e.g., `struct_cats='Family_ID'`).
 * **Why use it:** This provides a crucial safety net for isolated linguistic or taxonomic data. If your tree file suffers from unanchored or missing deeper branches across family lines, the categorical overlay bridges the gap, allowing the engine to calculate a stable density score without dropping data.
 
-### Example Configuration
+### Example configuration
 
 To run a fully integrated, multi-layer mixed analysis, pass both continuous inputs and text category column strings simultaneously:
 
@@ -162,27 +162,29 @@ spatial_k, structural_k = calculate_densities(
 )
 ```
 
-## Understanding the Outputs
+## Understanding the outputs
 
 The function returns two standard network adjacency metrics, both scaled strictly between `0.0` (no connectivity) and `1.0` (complete saturation):
 
 * **Spatial Density:** The proportion of your data point pairs that sit close enough to each other geographically to cross your distance limit.
 * **Structural Density:** The proportion of your data point pairs that share a deep historical or evolutionary branch segment.
 
-### Matrix Interpretation Guidelines
+### Matrix interpretation guidelines
 
 Because these connectivity metrics reflect the strength of spatial and historical relationships in the data, they serve as a guide for selecting the right model architecture:
 
-#### Spatial Density Tiers
-* **Sparse Spatial Frontier (κ_spatial ≤ 0.01):**
+#### Spatial density tiers
+* **Sparse spatial frontier (κ_spatial ≤ 0.01):**
   Indicates heavy geographic dispersion. While the continuous coordinate surface handles low density gracefully without collapsing your equations, it flags the need for specialized continuous models to fill extensive physical gaps. Standard models remain stable.
-* **Dense Spatial Mesh (κ_spatial > 0.20):**
+* **Dense spatial mesh (κ_spatial > 0.20):**
   Heavy geographic concentration. High risk of spatial autocorrelation (Galton's Problem), where proximity completely confounds historical independence. Spatial controls are mandatory.
 
-#### Structural Density Tiers
-* **Sparse Topology Danger Zone (κ_structural ≤ 0.10):**
-  The structural matrix shatters into completely disconnected lineage islands. Traditional multi-level models (like `brms` unconstrained hierarchical setups) run out of shared branch traction, triggering severe parameter collapse or runaway errors. Continuous spatial cross-pooling architectures (like `GPGLMM` coordinate mapping) are required to anchor the parameters.
-* **Dense Structural Mesh (κ_structural > 0.25):**
-  The dataset contains a highly dense, robust historical signal. Ideal for structure-aware models like Phylogenetic GLMMs (PGLMMs). Simple regressions (like standard GLM) must be avoided, as high structural density violates row-independence assumptions, leading to artificially low p-values and high false-positive rates.
+#### Structural density tiers
+* **Sparse topology [Critical Zone] (κ_structural ≤ 0.10):**
+  The structural matrix shatters into completely disconnected lineage islands. Traditional multi-level models run out of shared branch traction, triggering severe parameter collapse or runaway errors. Continuous spatial cross-pooling architectures are required to anchor the parameters.
+* **Moderate topology [Safe Zone] (0.25 > κ_structural ≥ 0.10):**
+  The dataset contains sufficient structural signal for convergence by multiple kinds of modeling architectures.
+* **Dense topology [Safe Zone] (κ_structural > 0.25):**
+  The dataset contains a highly dense, robust historical signal. Ideal for structure-aware models. Simple regressions may produce artificially low p-values and high false-positive rates, as high structural density violates row-independence assumptions.
 
 *Note: If your dataset lacks the columns needed for a specific calculation, the function returns `NaN` (Not a Number) for that metric instead of crashing, allowing your automation loops to finish running.*
