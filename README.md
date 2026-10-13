@@ -181,7 +181,7 @@ Because these connectivity metrics reflect the strength of spatial and historica
 
 #### Structural density tiers
 * **Sparse topology [Critical Zone] (κ_structural ≤ 0.10):**
-  The structural matrix shatters into completely disconnected lineage islands. Traditional multi-level models run out of shared branch traction, triggering severe parameter collapse or runaway errors. Continuous spatial cross-pooling architectures are required to anchor the parameters.
+  The structural matrix shatters into completely disconnected lineage islands. Traditional multi-level models run out of shared branch traction, triggering severe parameter collapse or runaway errors. Continuous spatial cross-pooling or properly partitioned architectures are required to anchor the parameters.
 * **Moderate topology [Safe Zone] (0.25 > κ_structural ≥ 0.10):**
   The dataset contains sufficient structural signal for convergence by multiple kinds of modeling architectures.
 * **Dense topology [Safe Zone] (κ_structural > 0.25):**
