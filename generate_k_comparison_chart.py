@@ -35,10 +35,10 @@ def load_and_clean_summary(file_name, domain_label):
             break
 
     if file_path is None:
-        print(f"   [MISSING] Could not find file: {file_name}")
+        print(f"Missing file: {file_name}")
         return pd.DataFrame()
 
-    print(f"   [FOUND] Loading {domain_label} dataset from: {os.path.relpath(file_path, base_dir)}")
+    print(f"Found file: Loading {domain_label} dataset from: {os.path.relpath(file_path, base_dir)}")
     df = pd.read_csv(file_path)
     df.replace("N/A", np.nan, inplace=True)
 
@@ -53,6 +53,7 @@ def load_and_clean_summary(file_name, domain_label):
     return df
 
 def generate_comparison_charts():
+    """coordinates the multi-domain comparison graphics generation loops."""
     print("Gathering multi-domain datasets...")
 
     # load datasets using active summary names
@@ -68,32 +69,43 @@ def generate_comparison_charts():
 
     # presentation style parameters
     plt.style.use('seaborn-v0_8-whitegrid' if 'seaborn-v0_8-whitegrid' in plt.style.available else 'default')
-    palette_map = {"Biology": "#2ca02c", "Linguistics": "#1f77b4", "Culture": "#e377c2"}
+
+    # applied universal okabe-ito palette parameters to guarantee distinct cross-vision visibility
+    palette_map = {"Biology": "#E69F00", "Linguistics": "#0072B2", "Culture": "#CC79A7"}
 
     # =========================================================================
     # IMAGE 1: GEOGRAPHIC TRAIT SHARING (0.01 SPATIAL GEODESIC BOUNDARY)
     # =========================================================================
     df_spatial = master_df.dropna(subset=["Spatial_Density"])
     if not df_spatial.empty:
-        print("\nGenerating Image 1: Geographic Sharing with 0.01 baseline floor...")
+        print("Generating Image 1: Geographic Sharing with 0.01 baseline floor...")
         fig, ax = plt.subplots(figsize=(7.5, 5.5), dpi=300)
 
         # explicit mapping to hue fixes deprecation warning gates
         sns.barplot(
             data=df_spatial, x="Domain", y="Spatial_Density", hue="Domain", ax=ax,
             palette=palette_map, legend=False, errorbar="sd", alpha=0.85,
-            capsize=0.1, err_kws={'linewidth': 1.5}
+            capsize=0.1, err_kws={'linewidth': 1.5}, edgecolor='black'
         )
         sns.stripplot(
             data=df_spatial, x="Domain", y="Spatial_Density", ax=ax,
-            color="#333333", size=5, alpha=0.4, jitter=0.15, dodge=False
+            color="#222222", size=5, alpha=0.4, jitter=0.15, dodge=False
         )
 
-        # inject decoupled spatial boundary indicator line (0.01 floor)
+        # map unique texture configurations to bars to guarantee greyscale scannability
+        for idx, bar in enumerate(ax.patches):
+            if idx == 0:
+                bar.set_hatch('//')
+            elif idx == 1:
+                bar.set_hatch('')
+            elif idx == 2:
+                bar.set_hatch('..')
+
+        # inject decoupled spatial boundary indicator line (0.01 floor) with dark contrast
         x_max_limit = 1.45
-        ax.axhline(0.01, color='#e6550d', linestyle='--', linewidth=1.2, alpha=0.75)
+        ax.axhline(0.01, color='#000000', linestyle='--', linewidth=1.2, alpha=0.75)
         ax.text(x_max_limit, 0.01 + 0.005, 'Spatial Frontier Floor (0.01)',
-                color='#a63603', fontsize=8, fontweight='bold', ha='right', va='bottom')
+                color='#000000', fontsize=8, fontweight='bold', ha='right', va='bottom')
 
         # capture scale window to show culture metrics and low spatial language bounds
         ax.set_ylim(-0.01, 0.25)
@@ -105,38 +117,47 @@ def generate_comparison_charts():
         plt.tight_layout()
         plt.savefig(output_img_a, bbox_inches="tight")
         plt.close()
-        print(f" Saved -> '{os.path.relpath(output_img_a, base_dir)}'")
+        print(f"Saved geographic sharing chart to: '{os.path.relpath(output_img_a, base_dir)}'")
 
     # =========================================================================
     # IMAGE 2: HISTORICAL TREE SHARING (0.10 STRUCTURAL SAFETY BARRIER)
     # =========================================================================
     df_struct = master_df.dropna(subset=["Structural_Density"])
     if not df_struct.empty:
-        print("\nGenerating Image 2: Historical Tree Sharing with 0.10 safety floor...")
+        print("Generating Image 2: Historical Tree Sharing with 0.10 safety floor...")
         fig, ax = plt.subplots(figsize=(7.5, 5.5), dpi=300)
 
         # explicit mapping to hue fixes deprecation warning gates
         sns.barplot(
             data=df_struct, x="Domain", y="Structural_Density", hue="Domain", ax=ax,
             palette=palette_map, legend=False, errorbar="sd", alpha=0.85,
-            capsize=0.1, err_kws={'linewidth': 1.5}
+            capsize=0.1, err_kws={'linewidth': 1.5}, edgecolor='black'
         )
         sns.stripplot(
             data=df_struct, x="Domain", y="Structural_Density", ax=ax,
-            color="#333333", size=4, alpha=0.3, jitter=0.2, dodge=False
+            color="#222222", size=4, alpha=0.3, jitter=0.2, dodge=False
         )
 
-        # inject decoupled structural safety threshold line (0.10 floor)
-        x_max_limit = 2.45
-        ax.axhline(0.10, color='#d62728', linestyle='--', linewidth=1.2, alpha=0.75)
-        ax.text(x_max_limit, 0.10 + 0.015, 'Sparse Topology ceiling (0.10)',
-                color='#b51a1a', fontsize=8, fontweight='bold', ha='right', va='bottom')
+        # map unique texture configurations to bars to guarantee greyscale scannability
+        for idx, bar in enumerate(ax.patches):
+            if idx == 0:
+                bar.set_hatch('\\\\')
+            elif idx == 1:
+                bar.set_hatch('//')
+            elif idx == 2:
+                bar.set_hatch('')
 
-        # inject decoupled structural density buffer line (0.25 floor)
+        # inject decoupled structural safety threshold line (0.10 floor) with high-contrast color
         x_max_limit = 2.45
-        ax.axhline(0.25, color='#d62728', linestyle='--', linewidth=1.2, alpha=0.75)
-        ax.text(x_max_limit, 0.25 + 0.015, 'Dense Topology floor (0.25)',
-                color='#b51a1a', fontsize=8, fontweight='bold', ha='right', va='bottom')
+        ax.axhline(0.10, color='#000000', linestyle='--', linewidth=1.2, alpha=0.75)
+        ax.text(x_max_limit, 0.10 + 0.015, 'Sparse Topology Ceiling (0.10)',
+                color='#000000', fontsize=8, fontweight='bold', ha='right', va='bottom')
+
+        # inject decoupled structural density buffer line (0.25 floor) with a distinct dot style
+        x_max_limit = 2.45
+        ax.axhline(0.25, color='#444444', linestyle=':', linewidth=1.5, alpha=0.85)
+        ax.text(x_max_limit, 0.25 + 0.015, 'Dense Topology Floor (0.25)',
+                color='#444444', fontsize=8, fontweight='bold', ha='right', va='bottom')
 
         # extend structural upper limit to clear high reptile benchmarks safely
         ax.set_ylim(-0.03, 1.05)
@@ -148,7 +169,7 @@ def generate_comparison_charts():
         plt.tight_layout()
         plt.savefig(output_img_b, bbox_inches="tight")
         plt.close()
-        print(f" Saved -> '{os.path.relpath(output_img_b, base_dir)}'")
+        print(f"Saved historical sharing chart to: '{os.path.relpath(output_img_b, base_dir)}'")
 
 if __name__ == "__main__":
     generate_comparison_charts()

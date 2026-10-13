@@ -68,12 +68,12 @@ If you have an explicit tree file showing how species are related:
 import pandas as pd
 from pykdensity import calculate_densities
 
-df = pd.read_csv("data/amphibians.csv")
+df = pd.read_csv("data/bio/mammals.csv")
 
 spatial_k, structural_k = calculate_densities(
     data=df,
     id_col="Species",
-    tree="data/amphibian100trees.nex",  
+    tree="data/bio/mammals100trees.nex",  
     tree_type="fixed",              
     struct_depth=5,
     verbose=True
@@ -87,12 +87,12 @@ If you are tracking geographic points alongside a tree file:
 import pandas as pd
 from pykdensity import calculate_densities
 
-df = pd.read_csv("data/linguistics_dataset.csv")
+df = pd.read_csv("data/tlu/Glottolog_Languages.csv")
 
 spatial_k, structural_k = calculate_densities(
     data=df,
     id_col="glottocode",
-    tree="tlu/0067_or_68KA/pruned_tree.trees.gz",
+    tree="data/tlu/0573KA/pruned_tree.trees.gz",
     tree_type="adaptive",
     coord_cols=["latitude", "longitude"],
     spatial_cats="macroarea",
@@ -110,7 +110,7 @@ If your data does not use explicit tree paths but relies on regional and histori
 import pandas as pd
 from pykdensity import calculate_densities
 
-df = pd.read_excel("data/Data_love_bywork_2019.xlsx")
+df = pd.read_excel("data/etc/Data_love_bywork_2019.xlsx")
 
 spatial_k, structural_k = calculate_densities(
     data=df,

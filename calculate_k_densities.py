@@ -1,8 +1,6 @@
 """
-example_connectivity_pipeline.py
-
-this script shows how to run the connectivity package across three separate
-fields of study. each section represents a different data setup.
+calculate_k_densities.py - This script shows how to run the connectivity package across three separate
+fields of study. Each section represents a different data setup.
 """
 
 import os
@@ -22,8 +20,8 @@ os.makedirs(results_dir, exist_ok=True)
 print("\nStarting cross-domain network data pipeline")
 
 # 1. biological data example
-# this step handles family trees where you have matching species traits but no
-# geographic location information. we tell the package to use the 'tree' mode,
+# This step handles family trees where you have matching species traits but no
+# geographic location information. We tell the package to use the 'tree' mode,
 # which looks only at the tree branches and ignores any text categories.
 print("\n" + "-" * 80)
 print("\n Processing domain: vertebrate ecology (biology)\n")
@@ -77,9 +75,9 @@ if bio_results:
     print(f"\nBiology results saved to: {os.path.relpath(bio_output_path, base_dir)}")
 
 # 2. linguistic data example
-# this step handles individual language traits across folders. it combines real
+# This step handles individual language traits across folders. it combines real
 # map positions (latitude and longitude numbers) with compressed family trees.
-# we use the 'adaptive' setting so the package automatically handles uneven
+# We use the 'adaptive' setting so the package automatically handles uneven
 # branch lengths across different language families.
 print("\n" + "-" * 80)
 print("\n Processing domain: linguistic typology (linguistics)\n")
@@ -158,8 +156,8 @@ else:
     print(f"Cannot run linguistics loop: file missing at {os.path.relpath(glottolog_path, base_dir)}")
 
 # 3. cultural data example
-# this step handles historical datasets that lack an explicit family tree file.
-# instead, we group data by matching named categories. space is grouped by
+# This step handles historical datasets that lack an explicit family tree file.
+# Instead, we group data by matching named categories. Space is handled via 
 # region names ('Zone'), and history is grouped by matching eras and formats.
 print("\n" + "-" * 80)
 print("\n Processing domain: cultural evolution (culture)\n")
